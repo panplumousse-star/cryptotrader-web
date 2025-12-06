@@ -1,7 +1,13 @@
+import type { Metadata } from 'next'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Plus, Play, Pause, Settings } from 'lucide-react'
+
+export const metadata: Metadata = {
+  title: 'Stratégies Bot',
+  description: 'Gérez vos stratégies de trading automatisées',
+}
 
 const strategies = [
   {

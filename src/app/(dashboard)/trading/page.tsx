@@ -1,5 +1,11 @@
+import type { Metadata } from 'next'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+
+export const metadata: Metadata = {
+  title: 'Trading',
+  description: 'Achetez et vendez des cryptomonnaies',
+}
 
 export default function TradingPage() {
   return (

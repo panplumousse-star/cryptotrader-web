@@ -1,4 +1,9 @@
+import type { Metadata } from 'next'
 import { Wallet } from 'lucide-react'
+
+export const metadata: Metadata = {
+  robots: 'noindex, nofollow',
+}
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (

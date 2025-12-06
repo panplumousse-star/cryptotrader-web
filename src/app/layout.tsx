@@ -1,8 +1,6 @@
-'use client'
-
+import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { useState } from 'react'
+import { Providers } from '@/components/providers'
 import './globals.css'
 
 const geistSans = Geist({
@@ -15,27 +13,30 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 })
 
+export const metadata: Metadata = {
+  title: {
+    default: 'CryptoTrader',
+    template: '%s - CryptoTrader',
+  },
+  description: 'Plateforme de trading de cryptomonnaies avec bot algorithmique et machine learning',
+  keywords: ['crypto', 'trading', 'bitcoin', 'ethereum', 'bot', 'algorithmic trading'],
+  authors: [{ name: 'CryptoTrader' }],
+  openGraph: {
+    title: 'CryptoTrader',
+    description: 'Plateforme de trading de cryptomonnaies',
+    type: 'website',
+  },
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            staleTime: 60 * 1000,
-            refetchOnWindowFocus: false,
-          },
-        },
-      })
-  )
-
   return (
     <html lang="fr" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
-        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   )
