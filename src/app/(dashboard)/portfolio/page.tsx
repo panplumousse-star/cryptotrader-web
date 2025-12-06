@@ -1,5 +1,11 @@
+import type { Metadata } from 'next'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { TrendingUp, TrendingDown, Wallet, Activity } from 'lucide-react'
+
+export const metadata: Metadata = {
+  title: 'Portfolio',
+  description: 'Vue d\'ensemble de votre portefeuille crypto',
+}
 
 export default function PortfolioPage() {
   return (
