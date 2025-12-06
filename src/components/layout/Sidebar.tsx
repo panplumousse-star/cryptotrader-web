@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import {
   LayoutDashboard,
   LineChart,
@@ -17,6 +17,7 @@ import {
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import { useAuthStore } from '@/stores/authStore'
 
 const navigation = [
   { name: 'Portfolio', href: '/portfolio', icon: LayoutDashboard },
@@ -33,6 +34,13 @@ const secondaryNavigation = [
 
 export function Sidebar() {
   const pathname = usePathname()
+  const router = useRouter()
+  const logout = useAuthStore((state) => state.logout)
+
+  const handleLogout = () => {
+    logout()
+    router.push('/login')
+  }
 
   return (
     <aside className="bg-sidebar text-sidebar-foreground flex h-screen w-64 flex-col border-r">
@@ -88,6 +96,7 @@ export function Sidebar() {
 
         <Button
           variant="ghost"
+          onClick={handleLogout}
           className="text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground w-full justify-start gap-3"
         >
           <LogOut className="h-5 w-5" />
