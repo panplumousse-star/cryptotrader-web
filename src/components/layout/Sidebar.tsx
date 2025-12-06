@@ -12,6 +12,7 @@ import {
   Wallet,
   TrendingUp,
   LogOut,
+  User,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -25,7 +26,10 @@ const navigation = [
   { name: 'Alertes', href: '/alerts', icon: Bell },
 ]
 
-const secondaryNavigation = [{ name: 'Paramètres', href: '/settings', icon: Settings }]
+const secondaryNavigation = [
+  { name: 'Profil', href: '/profile', icon: User },
+  { name: 'Paramètres', href: '/settings', icon: Settings },
+]
 
 export function Sidebar() {
   const pathname = usePathname()
