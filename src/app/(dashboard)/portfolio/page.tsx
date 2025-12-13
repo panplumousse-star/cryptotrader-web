@@ -110,7 +110,7 @@ export default function PortfolioPage() {
   // Success state with data
   const profitCount = assets.filter((a) => a.pnl > 0).length
   const lossCount = assets.filter((a) => a.pnl < 0).length
-  const isPnlPositive = summary.dailyPnl >= 0
+  const isPnlPositive = summary?.dailyPnl ? summary.dailyPnl >= 0 : true
 
   return (
     <div className="space-y-6">

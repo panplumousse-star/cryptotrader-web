@@ -5,7 +5,6 @@ export * from './websocket'
 export type {
   User,
   Asset,
-  PortfolioSummary,
   Order,
   OrderSide,
   OrderType,

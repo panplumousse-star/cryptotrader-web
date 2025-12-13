@@ -93,3 +93,30 @@ export interface MarketPair {
   priceIncrement: number
   sizeIncrement: number
 }
+
+// Portfolio types
+export interface PortfolioAsset {
+  id: string
+  symbol: string
+  name: string
+  amount: number
+  averagePrice: number
+  currentPrice: number
+  value: number
+  pnl: number
+  pnlPercent: number
+  allocation: number
+}
+
+export interface PortfolioSummary {
+  totalValue: number
+  totalPnl: number
+  totalPnlPercent: number
+  dailyPnl: number
+  dailyPnlPercent: number
+}
+
+export interface PortfolioResponse {
+  summary: PortfolioSummary
+  assets: PortfolioAsset[]
+}

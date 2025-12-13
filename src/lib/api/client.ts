@@ -38,10 +38,13 @@ apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     if (error.response?.status === 401) {
-      // Token expired or invalid
-      useAuthStore.getState().logout()
+      // Only redirect to login if not already on auth pages
       if (typeof window !== 'undefined') {
-        window.location.href = '/login'
+        const currentPath = window.location.pathname
+        if (!currentPath.startsWith('/login') && !currentPath.startsWith('/register')) {
+          useAuthStore.getState().logout()
+          window.location.href = '/login'
+        }
       }
     }
     return Promise.reject(error)

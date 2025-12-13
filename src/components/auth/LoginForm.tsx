@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useAuthStore } from '@/stores/authStore'
 import { apiClient } from '@/lib/api/client'
 
@@ -76,9 +77,20 @@ export function LoginForm() {
         router.push('/portfolio')
       }
     } catch (err: any) {
-      const errorMessage = err.response?.data?.detail || 'Erreur de connexion'
-      setError(typeof errorMessage === 'string' ? errorMessage : 'Erreur de connexion')
-      console.error('Login error:', err)
+      let errorMessage = 'Erreur de connexion'
+
+      if (err.response?.data?.detail) {
+        errorMessage = typeof err.response.data.detail === 'string'
+          ? err.response.data.detail
+          : 'Email ou mot de passe incorrect'
+      } else if (err.response?.status === 401) {
+        errorMessage = 'Email ou mot de passe incorrect'
+      } else if (err.message) {
+        errorMessage = err.message
+      }
+
+      setError(errorMessage)
+      console.error('Login error:', errorMessage, err)
     } finally {
       setIsLoading(false)
     }
@@ -129,9 +141,20 @@ export function LoginForm() {
         router.push('/portfolio')
       }
     } catch (err: any) {
-      const errorMessage = err.response?.data?.detail || 'Code MFA invalide'
-      setError(typeof errorMessage === 'string' ? errorMessage : 'Code MFA invalide')
-      console.error('MFA verification error:', err)
+      let errorMessage = 'Code MFA invalide'
+
+      if (err.response?.data?.detail) {
+        errorMessage = typeof err.response.data.detail === 'string'
+          ? err.response.data.detail
+          : 'Code MFA invalide'
+      } else if (err.response?.status === 401) {
+        errorMessage = 'Code MFA invalide'
+      } else if (err.message) {
+        errorMessage = err.message
+      }
+
+      setError(errorMessage)
+      console.error('MFA verification error:', errorMessage, err)
     } finally {
       setIsLoading(false)
     }
@@ -151,11 +174,11 @@ export function LoginForm() {
       </CardHeader>
       <CardContent>
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded text-red-800 text-sm">
-            {error}
-          </div>
+          <Alert variant="destructive" className="mb-4">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
         )}
-        
+
         {showMfaInput ? (
           <form onSubmit={handleMfaSubmit} className="space-y-4">
             <div className="space-y-2">
