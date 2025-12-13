@@ -48,22 +48,22 @@ export const usePortfolioStore = create<PortfolioState>((set, get) => ({
       const mappedAssets: Asset[] = holdings.map((holding: any) => ({
         id: holding.symbol,
         symbol: holding.symbol,
-        name: holding.name || holding.symbol,
-        amount: holding.balance,
-        averagePrice: 0, // Backend doesn't provide this yet
-        currentPrice: holding.price_usd,
-        value: holding.value_usd,
-        pnl: 0, // Will be calculated when we have average price
-        pnlPercent: 0,
-        allocation: holding.allocation_percent,
+        name: holding.asset || holding.symbol,
+        amount: holding.quantity || 0,
+        averagePrice: holding.avg_cost || 0,
+        currentPrice: holding.current_price || 0,
+        value: holding.value || 0,
+        pnl: holding.pnl || 0,
+        pnlPercent: holding.pnl_percent || 0,
+        allocation: holding.allocation_percent || 0,
       }))
 
       const summary: PortfolioSummary = {
-        totalValue: response.data.summary?.total_value_usd || 0,
-        totalPnl: 0, // Backend doesn't provide this yet
-        totalPnlPercent: 0,
-        dailyPnl: 0,
-        dailyPnlPercent: 0,
+        totalValue: response.data.summary?.total_value || 0,
+        totalPnl: response.data.summary?.total_pnl || 0,
+        totalPnlPercent: response.data.summary?.total_pnl_percent || 0,
+        dailyPnl: 0, // Not provided by backend yet
+        dailyPnlPercent: 0, // Not provided by backend yet
       }
 
       set({
