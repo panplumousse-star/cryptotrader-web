@@ -20,6 +20,12 @@ const eslintConfig = defineConfig([
       "prettier/prettier": "warn",
       "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
       "@typescript-eslint/no-explicit-any": "warn",
+
+      // Security-focused rules
+      "no-eval": "error",
+      "no-implied-eval": "error",
+      "no-new-func": "error",
+      "no-script-url": "error",
     },
   },
 ]);

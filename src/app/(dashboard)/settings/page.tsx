@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Separator } from '@/components/ui/separator'
+import { ApiKeysSettings, ChangePasswordDialog, TwoFactorDialog } from '@/components/settings'
 
 export const metadata: Metadata = {
   title: 'Paramètres',
@@ -50,29 +51,7 @@ export default function SettingsPage() {
         </TabsContent>
 
         <TabsContent value="api">
-          <Card>
-            <CardHeader>
-              <CardTitle>Clés API Coinbase</CardTitle>
-              <CardDescription>
-                Configurez vos clés API pour le trading automatique
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="api-key">API Key</Label>
-                <Input id="api-key" type="password" placeholder="Votre clé API" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="api-secret">API Secret</Label>
-                <Input id="api-secret" type="password" placeholder="Votre secret API" />
-              </div>
-              <Separator />
-              <p className="text-muted-foreground text-sm">
-                Assurez-vous de n&apos;activer que les permissions nécessaires sur Coinbase.
-              </p>
-              <Button>Enregistrer les clés</Button>
-            </CardContent>
-          </Card>
+          <ApiKeysSettings />
         </TabsContent>
 
         <TabsContent value="notifications">
@@ -99,12 +78,12 @@ export default function SettingsPage() {
                 <p className="text-muted-foreground text-sm">
                   Activez la 2FA pour sécuriser votre compte
                 </p>
-                <Button variant="outline">Configurer 2FA</Button>
+                <TwoFactorDialog />
               </div>
               <Separator />
               <div className="space-y-2">
                 <Label>Changer le mot de passe</Label>
-                <Button variant="outline">Modifier le mot de passe</Button>
+                <ChangePasswordDialog />
               </div>
             </CardContent>
           </Card>

@@ -1,7 +1,8 @@
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios'
+import { v4 as uuidv4 } from 'uuid'
 import { useAuthStore } from '@/stores'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001'
 
 export const apiClient: AxiosInstance = axios.create({
   baseURL: `${API_URL}/api/v1`,
@@ -11,13 +12,20 @@ export const apiClient: AxiosInstance = axios.create({
   },
 })
 
-// Request interceptor to add auth token
+// Request interceptor to add auth token and request ID
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
+    // Add authentication token
     const token = useAuthStore.getState().token
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`
     }
+
+    // Add unique request ID for tracing and debugging
+    if (config.headers) {
+      config.headers['X-Request-ID'] = uuidv4()
+    }
+
     return config
   },
   (error: AxiosError) => {
