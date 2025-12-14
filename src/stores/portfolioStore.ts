@@ -3,6 +3,19 @@ import type { PortfolioAsset, PortfolioSummary } from '@/types/api'
 import { apiClient } from '@/lib/api/client'
 import { AxiosError } from 'axios'
 
+// Backend API response types
+interface BackendHolding {
+  symbol: string
+  asset?: string
+  quantity?: number
+  avg_cost?: number
+  current_price?: number
+  value?: number
+  pnl?: number
+  pnl_percent?: number
+  allocation_percent?: number
+}
+
 export interface Asset {
   id: string
   symbol: string
@@ -45,7 +58,7 @@ export const usePortfolioStore = create<PortfolioState>((set, get) => ({
 
       // Map backend response to frontend types
       const holdings = response.data.holdings || []
-      const mappedAssets: Asset[] = holdings.map((holding: any) => ({
+      const mappedAssets: Asset[] = holdings.map((holding: BackendHolding) => ({
         id: holding.symbol,
         symbol: holding.symbol,
         name: holding.asset || holding.symbol,

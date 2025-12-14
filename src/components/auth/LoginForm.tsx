@@ -10,6 +10,12 @@ import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useAuthStore } from '@/stores/authStore'
 import { apiClient } from '@/lib/api/client'
+import { AxiosError } from 'axios'
+
+// API error response types
+interface ApiErrorDetail {
+  detail: string | Record<string, unknown>
+}
 
 export function LoginForm() {
   const router = useRouter()
@@ -76,21 +82,22 @@ export function LoginForm() {
         // Redirect to portfolio
         router.push('/portfolio')
       }
-    } catch (err: any) {
+    } catch (err) {
+      const error = err as AxiosError<ApiErrorDetail>
       let errorMessage = 'Erreur de connexion'
 
-      if (err.response?.data?.detail) {
-        errorMessage = typeof err.response.data.detail === 'string'
-          ? err.response.data.detail
+      if (error.response?.data?.detail) {
+        errorMessage = typeof error.response.data.detail === 'string'
+          ? error.response.data.detail
           : 'Email ou mot de passe incorrect'
-      } else if (err.response?.status === 401) {
+      } else if (error.response?.status === 401) {
         errorMessage = 'Email ou mot de passe incorrect'
-      } else if (err.message) {
-        errorMessage = err.message
+      } else if (error.message) {
+        errorMessage = error.message
       }
 
       setError(errorMessage)
-      console.error('Login error:', errorMessage, err)
+      console.error('Login error:', errorMessage, error)
     } finally {
       setIsLoading(false)
     }
@@ -140,21 +147,22 @@ export function LoginForm() {
         // Redirect to portfolio
         router.push('/portfolio')
       }
-    } catch (err: any) {
+    } catch (err) {
+      const error = err as AxiosError<ApiErrorDetail>
       let errorMessage = 'Code MFA invalide'
 
-      if (err.response?.data?.detail) {
-        errorMessage = typeof err.response.data.detail === 'string'
-          ? err.response.data.detail
+      if (error.response?.data?.detail) {
+        errorMessage = typeof error.response.data.detail === 'string'
+          ? error.response.data.detail
           : 'Code MFA invalide'
-      } else if (err.response?.status === 401) {
+      } else if (error.response?.status === 401) {
         errorMessage = 'Code MFA invalide'
-      } else if (err.message) {
-        errorMessage = err.message
+      } else if (error.message) {
+        errorMessage = error.message
       }
 
       setError(errorMessage)
-      console.error('MFA verification error:', errorMessage, err)
+      console.error('MFA verification error:', errorMessage, error)
     } finally {
       setIsLoading(false)
     }

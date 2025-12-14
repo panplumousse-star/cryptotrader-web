@@ -8,6 +8,12 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { apiClient } from '@/lib/api/client'
+import { AxiosError } from 'axios'
+
+// API error response types
+interface ApiErrorDetail {
+  detail: string | Record<string, unknown>
+}
 
 export function RegisterForm() {
   const router = useRouter()
@@ -59,10 +65,13 @@ export function RegisterForm() {
 
       // Succès - rediriger vers la page de connexion
       router.push('/login?registered=true')
-    } catch (err: any) {
-      const errorMessage = err.response?.data?.detail || 'Erreur lors de l\'inscription'
+    } catch (err) {
+      const error = err as AxiosError<ApiErrorDetail>
+      const errorMessage = typeof error.response?.data?.detail === 'string'
+        ? error.response.data.detail
+        : 'Erreur lors de l\'inscription'
       setError(errorMessage)
-      console.error('Registration error:', err)
+      console.error('Registration error:', error)
     } finally {
       setIsLoading(false)
     }

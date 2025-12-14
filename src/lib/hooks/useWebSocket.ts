@@ -28,13 +28,21 @@ export function useWebSocket(options: UseWebSocketOptions = {}) {
     if (wsRef.current?.readyState === WebSocket.OPEN) return
 
     try {
-      const url = token ? `${WS_URL}?token=${token}` : WS_URL
-      wsRef.current = new WebSocket(url)
+      // SECURITY: Never send token in URL - use WebSocket message instead
+      wsRef.current = new WebSocket(WS_URL)
 
       wsRef.current.onopen = () => {
         setIsConnected(true)
         setError(null)
         reconnectAttemptsRef.current = 0
+
+        // SECURITY: Send token via WebSocket message after connection
+        if (token) {
+          wsRef.current?.send(JSON.stringify({
+            action: 'authenticate',
+            token: token
+          }))
+        }
 
         // Subscribe to channels
         channels.forEach((channel) => {
