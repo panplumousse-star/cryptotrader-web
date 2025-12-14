@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
   LayoutDashboard,
-  LineChart,
   Bot,
   History,
   Bell,
@@ -12,7 +11,6 @@ import {
   Wallet,
   TrendingUp,
   LogOut,
-  User,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -28,14 +26,13 @@ const navigation = [
 ]
 
 const secondaryNavigation = [
-  { name: 'Profil', href: '/profile', icon: User },
   { name: 'Paramètres', href: '/settings', icon: Settings },
 ]
 
 export function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
-  const logout = useAuthStore((state) => state.logout)
+  const { user, logout } = useAuthStore()
 
   const handleLogout = () => {
     logout()
@@ -97,11 +94,31 @@ export function Sidebar() {
         <Button
           variant="ghost"
           onClick={handleLogout}
-          className="text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground w-full justify-start gap-3"
+          className="text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground w-full justify-start gap-3 cursor-pointer"
         >
           <LogOut className="h-5 w-5" />
           Déconnexion
         </Button>
+      </div>
+
+      <Separator />
+
+      <div className="px-4 py-3">
+        <div className="flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-medium">
+            {user?.name && user.name !== user.email
+              ? user.name.charAt(0).toUpperCase()
+              : user?.email?.charAt(0).toUpperCase() || 'U'}
+          </div>
+          <div className="flex flex-col min-w-0">
+            <span className="text-sm font-medium truncate">
+              {user?.name && user.name !== user.email ? user.name : 'Utilisateur'}
+            </span>
+            <span className="text-xs text-muted-foreground truncate">
+              {user?.email || ''}
+            </span>
+          </div>
+        </div>
       </div>
     </aside>
   )
