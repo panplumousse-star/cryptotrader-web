@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import { Wallet } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Logo } from '@/components/ui/logo'
 
 export default function Home() {
   return (
@@ -8,7 +8,7 @@ export default function Home() {
       <div className="flex max-w-2xl flex-col items-center gap-8 text-center">
         {/* Logo */}
         <div className="flex items-center gap-3">
-          <Wallet className="text-primary h-16 w-16" />
+          <Logo size="xl" />
           <h1 className="text-5xl font-bold">CryptoTrader</h1>
         </div>
 

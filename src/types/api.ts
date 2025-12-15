@@ -114,6 +114,8 @@ export interface PortfolioSummary {
   totalPnlPercent: number
   dailyPnl: number
   dailyPnlPercent: number
+  changeSinceStart: number
+  changeSinceStartPercent: number
 }
 
 export interface PortfolioResponse {

@@ -21,6 +21,11 @@ export const metadata: Metadata = {
   description: 'Plateforme de trading de cryptomonnaies avec bot algorithmique et machine learning',
   keywords: ['crypto', 'trading', 'bitcoin', 'ethereum', 'bot', 'algorithmic trading'],
   authors: [{ name: 'CryptoTrader' }],
+  icons: {
+    icon: '/logo.png',
+    shortcut: '/logo.png',
+    apple: '/logo.png',
+  },
   openGraph: {
     title: 'CryptoTrader',
     description: 'Plateforme de trading de cryptomonnaies',

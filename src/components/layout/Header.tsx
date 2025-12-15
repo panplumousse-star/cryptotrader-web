@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { Bell, Moon, Sun } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -15,9 +16,11 @@ export function Header() {
       </div>
 
       <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" className="relative">
-          <Bell className="h-5 w-5" />
-          <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 text-xs">3</Badge>
+        <Button asChild variant="ghost" size="icon" className="relative">
+          <Link href="/alerts" aria-label="Voir les alertes">
+            <Bell className="h-5 w-5" />
+            <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 text-xs">3</Badge>
+          </Link>
         </Button>
 
         <Button variant="ghost" size="icon" onClick={toggleTheme}>

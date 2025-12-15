@@ -8,7 +8,6 @@ import {
   History,
   Bell,
   Settings,
-  Wallet,
   TrendingUp,
   LogOut,
 } from 'lucide-react'
@@ -16,6 +15,7 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { useAuthStore } from '@/stores/authStore'
+import { Logo } from '@/components/ui/logo'
 
 const navigation = [
   { name: 'Portfolio', href: '/portfolio', icon: LayoutDashboard },
@@ -42,7 +42,7 @@ export function Sidebar() {
   return (
     <aside className="bg-sidebar text-sidebar-foreground flex h-screen w-64 flex-col border-r">
       <div className="flex h-16 items-center gap-2 px-6">
-        <Wallet className="text-primary h-8 w-8" />
+        <Logo size="md" />
         <span className="text-xl font-bold">CryptoTrader</span>
       </div>
 

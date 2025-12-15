@@ -22,6 +22,8 @@ interface BackendPortfolioResponse {
     total_value?: number
     total_pnl?: number
     total_pnl_percent?: number
+    change_since_start?: number
+    change_since_start_percent?: number
   }
 }
 
@@ -84,6 +86,8 @@ async function fetchPortfolio(): Promise<PortfolioData> {
     totalPnlPercent: response.data.summary?.total_pnl_percent || 0,
     dailyPnl: 0, // Not provided by backend yet
     dailyPnlPercent: 0, // Not provided by backend yet
+    changeSinceStart: response.data.summary?.change_since_start || 0,
+    changeSinceStartPercent: response.data.summary?.change_since_start_percent || 0,
   }
 
   return {

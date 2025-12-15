@@ -1,9 +1,23 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { apiClient } from '@/lib/api'
+import type { ChartType } from './portfolioStore'
+
+// Debounce timer for saving chart preferences
+let chartPreferencesSaveTimer: ReturnType<typeof setTimeout> | null = null
 
 export type Theme = 'light' | 'dark' | 'system'
 export type Currency = 'USD' | 'EUR' | 'GBP' | 'BTC'
+export type AutoRefreshInterval = null | 60000 | 300000 | 600000 | 3600000
+
+export interface PortfolioChartPreferences {
+  chartType: ChartType
+  timeRange: {
+    type: 'relative' | 'absolute'
+    relativeValue?: string
+  }
+  autoRefreshInterval?: AutoRefreshInterval
+}
 
 export interface NotificationSettings {
   priceAlerts: boolean
@@ -37,12 +51,21 @@ interface SettingsState {
   apiKeys: ApiKeysStatus | null
   apiKeysLoading: boolean
   apiKeysError: string | null
+  userSettingsLoading: boolean
+  userSettingsError: string | null
+  hasLoadedUserSettings: boolean
+  portfolioVisibleAssets: string[]
+  portfolioChartPreferences: PortfolioChartPreferences | null
   setNotificationSetting: <K extends keyof NotificationSettings>(
     key: K,
     value: NotificationSettings[K]
   ) => void
   setDisplaySetting: <K extends keyof DisplaySettings>(key: K, value: DisplaySettings[K]) => void
   resetSettings: () => void
+  setPortfolioVisibleAssets: (symbols: string[]) => void
+  fetchUserSettings: () => Promise<void>
+  saveUserSettings: () => Promise<boolean>
+  savePortfolioChartPreferences: (prefs: PortfolioChartPreferences) => void
   // API Keys actions
   fetchApiKeys: () => Promise<void>
   saveApiKeys: (apiKey: string, apiSecret: string, label?: string) => Promise<boolean>
@@ -74,6 +97,11 @@ export const useSettingsStore = create<SettingsState>()(
       apiKeys: null,
       apiKeysLoading: false,
       apiKeysError: null,
+      userSettingsLoading: false,
+      userSettingsError: null,
+      hasLoadedUserSettings: false,
+      portfolioVisibleAssets: [],
+      portfolioChartPreferences: null,
 
       setNotificationSetting: (key, value) =>
         set((state) => ({
@@ -90,6 +118,114 @@ export const useSettingsStore = create<SettingsState>()(
           notifications: defaultNotifications,
           display: defaultDisplay,
         }),
+
+      setPortfolioVisibleAssets: (symbols: string[]) =>
+        set({
+          // Deduplicate while preserving order
+          portfolioVisibleAssets: Array.from(new Set(symbols)),
+        }),
+
+      fetchUserSettings: async () => {
+        set({ userSettingsLoading: true, userSettingsError: null })
+        try {
+          const response = await apiClient.get('/user/settings')
+          const symbols: string[] = response.data?.portfolio_visible_assets || []
+          const chartPrefs = response.data?.portfolio_chart_preferences || null
+
+          // Parse chart preferences from backend
+          let portfolioChartPreferences: PortfolioChartPreferences | null = null
+          if (chartPrefs) {
+            portfolioChartPreferences = {
+              chartType: chartPrefs.chart_type || 'area',
+              timeRange: {
+                type: chartPrefs.time_range?.type || 'relative',
+                relativeValue: chartPrefs.time_range?.relative_value,
+              },
+              autoRefreshInterval: chartPrefs.auto_refresh_interval ?? null,
+            }
+          }
+
+          set({
+            portfolioVisibleAssets: Array.from(new Set(symbols)),
+            portfolioChartPreferences,
+            userSettingsLoading: false,
+            hasLoadedUserSettings: true,
+          })
+        } catch (error: unknown) {
+          const errorMessage = error instanceof Error ? error.message : 'Failed to fetch user settings'
+          set({
+            userSettingsError: errorMessage,
+            userSettingsLoading: false,
+            hasLoadedUserSettings: false,
+          })
+        }
+      },
+
+      saveUserSettings: async () => {
+        set({ userSettingsLoading: true, userSettingsError: null })
+        try {
+          const { portfolioVisibleAssets, portfolioChartPreferences } = get()
+
+          // Build payload with chart preferences in snake_case for backend
+          const payload: Record<string, unknown> = {
+            portfolio_visible_assets: portfolioVisibleAssets,
+          }
+
+          if (portfolioChartPreferences) {
+            payload.portfolio_chart_preferences = {
+              chart_type: portfolioChartPreferences.chartType,
+              time_range: {
+                type: portfolioChartPreferences.timeRange.type,
+                relative_value: portfolioChartPreferences.timeRange.relativeValue,
+              },
+            }
+          }
+
+          await apiClient.post('/user/settings', payload)
+          set({
+            userSettingsLoading: false,
+            hasLoadedUserSettings: true,
+          })
+          return true
+        } catch (error: unknown) {
+          const errorMessage = error instanceof Error ? error.message : 'Failed to save user settings'
+          set({
+            userSettingsError: errorMessage,
+            userSettingsLoading: false,
+          })
+          return false
+        }
+      },
+
+      savePortfolioChartPreferences: (prefs: PortfolioChartPreferences) => {
+        // Update state immediately
+        set({ portfolioChartPreferences: prefs })
+
+        // Debounce the API call to avoid excessive requests
+        if (chartPreferencesSaveTimer) {
+          clearTimeout(chartPreferencesSaveTimer)
+        }
+
+        chartPreferencesSaveTimer = setTimeout(async () => {
+          try {
+            const { portfolioVisibleAssets } = get()
+            await apiClient.post('/user/settings', {
+              portfolio_visible_assets: portfolioVisibleAssets,
+              portfolio_chart_preferences: {
+                chart_type: prefs.chartType,
+                time_range: {
+                  type: prefs.timeRange.type,
+                  relative_value: prefs.timeRange.relativeValue,
+                },
+                auto_refresh_interval: prefs.autoRefreshInterval ?? null,
+              },
+            })
+          } catch (error) {
+            // Silently fail - preferences will be re-saved on next change
+            console.error('Failed to save chart preferences:', error)
+          }
+        }, 500)
+      },
 
       fetchApiKeys: async () => {
         set({ apiKeysLoading: true, apiKeysError: null })
@@ -196,6 +332,8 @@ export const useSettingsStore = create<SettingsState>()(
       partialize: (state) => ({
         notifications: state.notifications,
         display: state.display,
+        portfolioVisibleAssets: state.portfolioVisibleAssets,
+        portfolioChartPreferences: state.portfolioChartPreferences,
       }),
     }
   )
